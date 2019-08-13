@@ -2,19 +2,21 @@
 >  Ref Link : [W3Resource](https://w3resource.com/mysql/mysql-show.php)
 
 **INDEX**
-- Architecture
-- Replication
-- Parameters
-- Administrator
-  - Backup
+- ~~Architecture~~
+- ~~Replication~~
+  - Replication Manage
+  - Replication Parameter
+- ~~Parameters~~
+- ~~Administrator~~
+  ~~- Backup~~
   - Privileges
 - SHOW / SET Command
-- Command Line Interface
-- Variables
-- Function
-- Data Type
-- Tuning : Explain
-- Tuning : Hint
+- ~~Command Line Interface~~
+- ~~Variables~~
+- ~~Function~~
+- ~~Data Type~~
+- ~~Tuning : Explain~~
+- ~~Tuning : Hint~~
 
 ## Architecture
 ### Storage Engine
@@ -23,9 +25,39 @@
 ## Replication
 Replication Setting
 ### Replication Manage
-#### Master Node
-#### Slave Node
+1. **Binary Log Manage**
+    - Binary Log List 확인
+``show binary logs``
 
+      | Log_name | File_size     | Encrypted|
+      | :------------- | :------------- | :------------- |
+      |LAPTOP-1-bin.000001	|178 |	No |
+      |LAPTOP-1-bin.000002	|2092538 |	No |
+      |LAPTOP-1-bin.000003	|178 |	No |
+      |LAPTOP-1-bin.000004	|155 |	No |
+      |LAPTOP-1-bin.000005	|178 |	No |
+      |LAPTOP-1-bin.000006	|178 |	No |
+
+    - Binary Log Purge (날짜기준)
+``purge binary logs before '2019-08-05'``
+
+    - Binary Log Purge (파일기준)
+``purge binary logs to  'LAPTOP-4LJT842D-bin.000004'``
+
+    - Binary Log Event 상세 확인
+``show binlog events [in 'LAPTOP-4LJT842D-bin.000005']``
+
+      | Log_name | Pos     | Event_type|Server_id | End_log_pos|Info|
+      | :------------- | :------------- | :------------- | :-------------       | :------------- | :------------- |
+      |LAPTOP-1-bin.000005 | 	4 | 	Format_desc | 	1 | 	124| 	      Server ver: 8.0.17, Binlog ver: 4|
+      |LAPTOP-1-bin.000005 | 	124 | 	Previous_gtids | 	1 | 	     155| 	|
+      |LAPTOP-1-bin.000005 | 	155 | 	Stop | 	1 | 	178| 	|
+
+2. **Relay Log Manage**
+    - Relay Log Event 상세 확인
+``show relaylog events [in 'LAPTOP-4LJT842D-bin.000005']``
+
+### Replication Parameter
 
 ## Parameters
 Parameter Settings
@@ -84,57 +116,57 @@ GRANT priv_type ON dbname.tablename TO user_or_role [with grant option]
 
 
 
-**Admin**
-- SHOW DATABASE _[LIKE 'pattern' | WHERE expr]_
-- SHOW TABLES _[{FROM | IN} db_name] [LIKE 'pattern' | WHERE expr]_
-- SHOW PROCESSLIST
-- SHOW PLUGINS
-- SHOW ENGINE _[engine_name]_ STATUS
-- SHOW ENGINES
-- SHOW ERRORS
-- SHOW WARNINGS
-- SHOW EVENTS
-- SHOW OPEN TABLES
+1. **Administrator**
+    - SHOW DATABASE _[LIKE 'pattern' | WHERE expr]_
+    - SHOW TABLES _[{FROM | IN} db_name] [LIKE 'pattern' | WHERE  expr]_
+    - SHOW PROCESSLIST
+    - SHOW PLUGINS
+    - SHOW ENGINE _[engine_name]_ STATUS
+    - SHOW ENGINES
+    - SHOW ERRORS
+    - SHOW WARNINGS
+    - SHOW EVENTS
+    - SHOW OPEN TABLES
 
-**Stat/Variables**
-- SHOW _[GLOBAL | SESSION]_ STATUS _[LIKE 'pattern' | WHERE expr]_
-- SHOW _[GLOBAL | SESSION]_ VARIABLES _[LIKE 'pattern' | WHERE expr]_
+2. **Stat/Variables**
+    - SHOW _[GLOBAL | SESSION]_ STATUS _[LIKE 'pattern' | WHERE expr]_
+    - SHOW _[GLOBAL | SESSION]_ VARIABLES _[LIKE 'pattern' | WHERE expr]_
 
-**Privileges**
-- SHOW GRANTS _[FOR user]_H
-- SHOW PRIVILEGES
+3. **Privileges**
+    - SHOW GRANTS _[FOR user]_
+    - SHOW PRIVILEGES
 
-**Character Set**
-- SHOW CHARACTER SET _[LIKE 'pattern' | WHERE expr]_
-- SHOW COLLATION _[LIKE 'pattern' | WHERE expr]_
+4. **Character Set**
+    - SHOW CHARACTER SET _[LIKE 'pattern' | WHERE expr]_
+    - SHOW COLLATION _[LIKE 'pattern' | WHERE expr]_
 
-**Description (Table/Index)**
-- SHOW COLUMNS _{FROM | IN} tbl_name [{FROM | IN} db_name] [LIKE 'pattern' | WHERE expr]_
-- SHOW INDEX[S] _{FROM | IN} tbl_name [{FROM | IN} db_name] [WHERE expr]_
-- SHOW TABLE STATUS _[{FROM | IN} db_name] [LIKE 'pattern' | WHERE expr]_
+5. **Description (Table/Index)**
+    - SHOW COLUMNS _{FROM | IN} tbl_name [{FROM | IN} db_name] [LIKE    'pattern' | WHERE expr]_
+    - SHOW INDEX[S] _{FROM | IN} tbl_name [{FROM | IN} db_name] [WHERE    expr]_
+    - SHOW TABLE STATUS _[{FROM | IN} db_name] [LIKE 'pattern' | WHERE expr]_
 
-**DDL Metadata**
-- SHOW CREATE DATBASE
-- SHOW CREATE FUNCTION
-- SHOW CREATE PROCEDURE
-- SHOW CREATE TABLE
-- SHOW CREATE TRIGGER
-- SHOW CREATE VIEW
-- SHOW CREATE EVENT
-- SHOW FUNCTION CODE
-- SHOW FUNCTION STATUS
-- SHOW PROCEDURE CODE
-- SHOW PROCEDURE STATUS
+6. **DDL Metadata**
+    - SHOW CREATE DATBASE
+    - SHOW CREATE FUNCTION
+    - SHOW CREATE PROCEDURE
+    - SHOW CREATE TABLE
+    - SHOW CREATE TRIGGER
+    - SHOW CREATE VIEW
+    - SHOW CREATE EVENT
+    - SHOW FUNCTION CODE
+    - SHOW FUNCTION STATUS
+    - SHOW PROCEDURE CODE
+    - SHOW PROCEDURE STATUS
 
-**Binary / Relay Log**
-- SHOW BINARY LOGS
-- SHOW BINLOG EVENTS _[IN 'log_name'] [FROM pos] [LIMIT [offset,] row_count]_
-- SHOW RELAYLOG EVENTS _[IN 'log_name'] [FROM pos] [LIMIT [offset,] row_count]_
+7. **Binary / Relay Log**
+    - SHOW BINARY LOGS
+    - SHOW BINLOG EVENTS _[IN 'log_name'] [FROM pos] [LIMIT [offset,]     row_count]_
+    - SHOW RELAYLOG EVENTS _[IN 'log_name'] [FROM pos] [LIMIT [offset,] row_count]_
 
-**Replication**
-- SHOW SLAVE HOSTS
-- SHOW SLAVE STATUS
-- SHOW MASTER STATUS
+8. **Replication**
+    - SHOW SLAVE HOSTS
+    - SHOW SLAVE STATUS
+    - SHOW MASTER STATUS
 
 ## Command Line Interface
 구동
