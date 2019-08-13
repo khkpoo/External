@@ -19,11 +19,12 @@
 - ~~Tuning : Hint~~
 
 ## Architecture
+> Write More.
 ### Storage Engine
 ### Database Engine
 
 ## Replication
-Replication Setting
+> Write More.
 ### Replication Manage
 1. **Binary Log Manage**
     - Binary Log List 확인
@@ -33,25 +34,22 @@ Replication Setting
       | :------------- | :------------- | :------------- |
       |LAPTOP-1-bin.000001	|178 |	No |
       |LAPTOP-1-bin.000002	|2092538 |	No |
-      |LAPTOP-1-bin.000003	|178 |	No |
-      |LAPTOP-1-bin.000004	|155 |	No |
-      |LAPTOP-1-bin.000005	|178 |	No |
-      |LAPTOP-1-bin.000006	|178 |	No |
+
 
     - Binary Log Purge (날짜기준)
-``purge binary logs before '2019-08-05'``
+    ``purge binary logs before '2019-08-05'``
 
     - Binary Log Purge (파일기준)
-``purge binary logs to  'LAPTOP-4LJT842D-bin.000004'``
+    ``purge binary logs to  'LAPTOP-4LJT842D-bin.000004'``
 
     - Binary Log Event 상세 확인
-``show binlog events [in 'LAPTOP-4LJT842D-bin.000005']``
+    ``show binlog events [in 'LAPTOP-4LJT842D-bin.000005']``
 
       | Log_name | Pos     | Event_type|Server_id | End_log_pos|Info|
       | :------------- | :------------- | :------------- | :-------------       | :------------- | :------------- |
       |LAPTOP-1-bin.000005 | 	4 | 	Format_desc | 	1 | 	124| 	      Server ver: 8.0.17, Binlog ver: 4|
       |LAPTOP-1-bin.000005 | 	124 | 	Previous_gtids | 	1 | 	     155| 	|
-      |LAPTOP-1-bin.000005 | 	155 | 	Stop | 	1 | 	178| 	|
+
 
 2. **Relay Log Manage**
     - Relay Log Event 상세 확인
@@ -60,10 +58,10 @@ Replication Setting
 ### Replication Parameter
 
 ## Parameters
-Parameter Settings
+> Write More.
 
 ## Administrator
-administrator
+> Write More.
 ### Backup
 ### Privileges
 > 작성 완료 (2019-08-09)
@@ -169,10 +167,26 @@ GRANT priv_type ON dbname.tablename TO user_or_role [with grant option]
     - SHOW MASTER STATUS
 
 ## Command Line Interface
-구동
+> Dump, Admin 등 Binary수행커맨드 추가필요
+
+1. **구동 및 접속**
+```
+Windows     : mysqld_safe --user=mysql &
+Non-Windows : mysql.exe --defaults-file="...\my.ini" service_name
+
 mysql -h 1.1.1.1 -P3306 -uUSER -pPASS DATABASENAME
-Script 수행
+```
+2. **중지**
+```
+mysqladmin -uUSER -pPASS shutdown
+```
+3. **Script 수행**
+```
 mysql -uUSER -pPASS < script.sql
 mysql> sourche script.sql
+```
+4. **Session Kill**
+```
 Process Kill
 kill PROCESS_ID
+```
