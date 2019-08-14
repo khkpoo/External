@@ -27,8 +27,9 @@
 > Write More.
 ### Replication Manage
 1. **Binary Log Manage**
-    - Binary Log List 확인
-``show binary logs``
+
+    - Binary Log List 확인    
+    ``show binary logs``    
 
       | Log_name | File_size     | Encrypted|
       | :------------- | :------------- | :------------- |
