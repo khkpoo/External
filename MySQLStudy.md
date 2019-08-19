@@ -49,7 +49,7 @@
       | Log_name | Pos | Event_type | Server_id | End_log_pos | Info |
       | :------------- | :------------- | :------------- | :------------- | :------------- | :------------- |
       |LAPTOP-1-bin.000005 | 	4 | 	Format_desc | 	1 | 	124| Server ver: 8.0.17, Binlog ver: 4 |
-
+      |LAPTOP-1-bin.000005 | 	124 | 	Previous_gtids | 	1 | 	     155|  	|
 
 2. **Relay Log Manage**
     - Relay Log Event 상세 확인
