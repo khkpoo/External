@@ -11,12 +11,13 @@
   ~~- Backup~~
   - Privileges
 - SHOW / SET Command
-- ~~Command Line Interface~~
+- ~~Command Line Interface~ ~
 - ~~Variables~~
 - ~~Function~~
 - ~~Data Type~~
 - ~~Tuning : Explain~~
 - ~~Tuning : Hint~~
+
 
 ## Architecture
 > Write More.
@@ -384,3 +385,4 @@ mysql> sourche script.sql
 Process Kill
 kill PROCESS_ID
 ```
+test  

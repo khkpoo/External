@@ -3,11 +3,9 @@ import io
 sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding = 'utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding = 'utf-8')
 
-a="gksrmf한글을 ' '   ''' '포함한 문자열입니다"
-# print(a)
-# print(a[:6]+'-'+a[6:])
-b=20
-
-print("{0} is deliciaos {1}".format(b,1))
-print("{0:!^100}".format(" khkpoo booofdsfs       dsfsdfsd "))
-print(f"{a}")
+# 문자열 함수
+str1="Hello Python!"
+print(str1.count('o'))  # 패턴 개수 리턴
+print(str1.find('o'))   # 패턴 위치 리턴(최초), 없을경우 -1
+print(str1.index('o'))  # 패턴 위치 리턴(최초), 없을경우 에러
+print(str1.join('abc'))
