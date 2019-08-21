@@ -1,4 +1,4 @@
-# modify 
+# modify 0954
 # Test
 # MySQL
 >  Ref Link : [W3Resource](https://w3resource.com/mysql/mysql-show.php)
@@ -17,7 +17,7 @@
 - ~~Variables~~
 - ~~Function~~
 - ~~Data Type~~
-- ~~Tuning : Explain~~
+- ~~Tuning : Explain~~d
 - ~~Tuning : Hint~~
 
 
