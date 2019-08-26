@@ -1,5 +1,3 @@
-# modify 0954
-# Test
 # MySQL
 >  Ref Link : [W3Resource](https://w3resource.com/mysql/mysql-show.php)
 
@@ -121,7 +119,8 @@ default_character_set       = utf8
 back_log                    = 100                     # 클라이언트가 MySQL 접속시 인증을 대기 대기 큐에 담아 둘지 결정.
 max_connections             = 300
 max_connect_errors          = 999999
-thread_cache_size           = 50                      # 쓰레드 풀, 최대 몇 개까지 스레드를 스레드 풀에 보관할지 결정. Threads_created / Connections)값이 0.01 즉 1% 이상이면 thread_cache_size 값 증가 고려
+thread_cache_size           = 50                      # 쓰레드 풀, 최대 몇 개까지 스레드를 스레드 풀에 보관할지 결정. 
+                                                      # Threads_created / Connections)값이 0.01(1%) 이상이면 thread_cache_size 값 증가 고려
                                                       # Connection Pool 사용시 필요없음
 table_open_cache            = 400
 wait_timeout                = 28800                   # 지정된 시간 동안 응답이 없는 클라이언트 강제 종료
@@ -131,12 +130,12 @@ wait_timeout                = 28800                   # 지정된 시간 동안 
 - **Session Memory**
 ```
 # 아래 네개는 세션 범위의 변수 예) 500개 세션 접속 500*512kb=256000kb(250MB). 동적 변수
-sort_buffer_size            = 128K                    # 적정 수준 64KB~512KB. 2MB이상은 느려지는 현상 발생.
-join_buffer_size            = 128K                    # 적절한 조인 조건이 없어 Driven 테이블이 Full Table Scan될 때 사용. 128~512KB 사이 권장
-read_buffer_size            = 128K                    # 정확하진 않으나, Full Table Scan시 사용. 16kb~32MB에서 128kb일 때 가장 빠른 성능
-read_rnd_buffer_size        = 128K                    # 읽어야 할 데이터 레코드를 버퍼링하는데 필요. 
-                                                      # Two-Pass 정렬시 사용되는 영역. ( 정렬대상 적을시 Single-pass, 크면 Two-pass )
-                                                      # 64~128kb 적정. 웹환경이 아닌 dw일 경우 늘려야 함
+sort_buffer_size              = 128K                    # 적정 수준 64KB~512KB. 2MB이상은 느려지는 현상 발생.
+join_buffer_size              = 128K                    # 적절한 조인 조건이 없어 Driven 테이블이 Full Table Scan될 때 사용. 128~512KB 사이 권장
+read_buffer_size              = 128K                    # 정확하진 않으나, Full Table Scan시 사용. 16kb~32MB에서 128kb일 때 가장 빠른 성능
+read_rnd_buffer_size          = 128K                    # 읽어야 할 데이터 레코드를 버퍼링하는데 필요. 
+                                                        # Two-Pass 정렬시 사용되는 영역. ( 정렬대상 적을시 Single-pass, 크면 Two-pass )
+                                                        # 64~128kb 적정. 웹환경이 아닌 dw일 경우 늘려야 함
 # Query Cache... Depricated in 8
 # 쿼리 캐쉬와 관련되었으며 128MB를 넘기지 않는다.메모리가 충분치 않거나, 테이블 데이터가 빈번하게 변경되면 64MB 이상으로는 설정하지 않음.
 # query_cache_size            = 32M
@@ -172,11 +171,12 @@ innodb_data_file_path       = ib_system:100M:autoextend         # 시스템 데�
 
 - **Innodb : Undo File**
 ```
-innodb_undo_directory                      = /mysql/innodb/undo
-innodb_max_undo_log_size                   = 1073741824               # Tuncate 수행 여부 결정 기준값 (해당 기준치를 넘을 경우 초기화 값으로 Truncate 되도록)
-innodb_undo_log_truncate                   = 1                        # Tuncate 수행 여부 0(Disable)
-innodb_purge_rseg_truncate_frequency       = 128                      # 자동 Truncate 수행 빈도. DML 수행 횟수. 수치가 작을수록 잦은 Undo 공간체크를 수행하므로 Truncate 수행 빈도 증가함
-innodb_undo_tablespaces                    = 2                        # Undo TS 개수 (초기화시점에만적용), Deprecate in 8
+innodb_undo_directory                 = /mysql/innodb/undo
+innodb_max_undo_log_size              = 1073741824              # Tuncate 수행 여부 결정 기준값 (해당 기준치를 넘을 경우 초기화 값으로 Truncate 되도록)
+innodb_undo_log_truncate              = 1                       # Tuncate 수행 여부 0(Disable)
+innodb_purge_rseg_truncate_frequency  = 128                     # 자동 Truncate 수행 빈도. DML 수행 횟수. 
+                                                                # 수치가 작을수록 잦은 Undo 공간체크를 수행하므로 Truncate 수행 빈도 증가함
+innodb_undo_tablespaces               = 2                       # Undo TS 개수 (초기화시점에만적용), Deprecate in 8
 ```
 
 - **Innodb : Redo Log**
@@ -192,20 +192,22 @@ innodb_redo_log_archive_dirs                              # New Feature in Mysql
 ```
 - **Innodb : Etc**
 ```
-innodb_fast_shutdown        = 1                         # Clean Shutdown. 종료시 변경사항 Datafile에 기록. 
-                                                        # 재시작 시 Redo가 필요없고 시작이 빠르나, 종료시 느림
+innodb_fast_shutdown          = 1                         # Clean Shutdown. 종료시 변경사항 Datafile에 기록. 
+                                                          # 재시작 시 Redo가 필요없고 시작이 빠르나, 종료시 느림
+innodb_write_io_threads       = 4                         # Write의 경우 대부분 Background로 수행되므로 크게 설정하는것이 유리
+innodb_read_io_threads        = 4                         # Read작업의 경우 Client Thread에서 주로 하므로 크게 설정할 필요없음
 ```
 
 - **MyISAM**
 ```
-key_buffer_size             = 32M                       # MyISAM엔진에서 주로 인덱스에 대해서만 버퍼 역할을 한다. 일반적으로 30~50%설정.
-bulk_insert_buffer_size     = 32M
-myisam_sort_buffer_size     = 1M
-myisam_max_sort_file_size   = 2G
-myisam_repair_threads       = 1
-ft_min_word_len             = 2
-# myisam_recover                                        # unknown
-#ft_min_word_len            = 3
+key_buffer_size               = 32M                       # MyISAM엔진에서 주로 인덱스에 대해서만 버퍼 역할을 한다. 일반적으로 30~50%설정.
+bulk_insert_buffer_size       = 32M
+myisam_sort_buffer_size       = 1M
+myisam_max_sort_file_size     = 2G
+myisam_repair_threads         = 1
+ft_min_word_len               = 2
+# myisam_recover                                          # unknown
+#ft_min_word_len              = 3
 ```
 
 - **Log File**
@@ -234,11 +236,10 @@ log-bin                         = /usr/local/mysql/logs/binary_log
 log-bin-index                   = /usr/local/mysql/logs/binary_index
 max_binlog_size                 = 512M
 binlog_expire_logs_seconds      = 259200
-# binlog_cache_size             = 128K                            # 버퍼에 기록했다 디스크로 기록. 버퍼용 메모리 크기. 소용량 56~256kb
-binlog_cache_size               = 2M                              # Sessin별 사용량이므로 크지않게, 56 ~ 256 KB
+# binlog_cache_size             = 128K                            # 버퍼에 기록했다 디스크로 기록. 버퍼용 메모리 크기. 소용량 56~256kb 
+                                                                  # Sessin별 사용량이므로 크지않게 설정
 binlog_format                   = MIXED
-log_bin_trust_function_creators = 0
-log-bin-trust-function-creators = 1                               # 바이너리 로그가 활성화된 상태에서 스터어드 함수가 생성되면 " 바이너리 로그로 인한 복제가 안전하지 않다"란 에러 발생.
+log-bin-trust-function-creators = 1                               # 바이너리 로그가 활성화된 상태에서 스터어드 함수가 생성되면 "바이너리 로그로 인한 복제가 안전하지 않다"란 에러 발생.
                                                                   # 해당 파라미터는 위와 같은  경고를 무시하고 스토어드 함수  를 생성.
 sync_binlog                     = 1                               # 로그의 성능부하는 innodb의 로그와 binlog의 sync시 부하가 발생.(주로 쓰기 작업)
                                                                   # 1으로 설정시 트랜잭션 커밋 될 때마다 바이너리 로그를 디  스크에 플러쉬.
@@ -246,12 +247,11 @@ sync_binlog                     = 1                               # 로그의 �
                                                                   # 0으로 설정시 마스터가 죽으 면, 바이너리 로그가 손실되어  데이터가 틀려질 수 있음(성능  빠름)
 # Depricated
 #expire_logs_days               = 14
-
 ```
 
 - **Replication : Slave Node**
 ```
-relay-log                   = /orad/mysql_dalta/binlog/binary_log
+relay_log                   = /orad/mysql_dalta/binlog/binary_log
 relay_log_purge             = TRUE                                  # 이미 적용하여 불필요한 relay log 자동 purge (1,0)
 read_only                                                           # 슬레이브일 경우 읽기전용으로 만드는 옵션
 ```
@@ -267,7 +267,7 @@ innodb_stats_persistent_sample_pages    = 20
 
 # Non-Persistent Statistics 사용시
 # Memory에만 Statistics정보 저장
-# Analyze table 로 수집하거나, innodb_stats_on_metadata가 켜진 경우라면 show table status 같은 command 조회시 동적 수집
+# Analyze table 로 수집하거나, innodb_stats_on_metadata가 켜진 경우 show table status 같은 command 조회시 수집
 innodb_stats_persistent                 = OFF
 innodb_stats_on_metadata                = ON
 innodb_stats_transient_sample_pages     = 8                     # innodb_stats_sample_pages 가 Deprecated 되고 innodb_stats_sample_pages 로 변경 됨 (MySQL 8.0~)
@@ -286,39 +286,40 @@ innodb_stats_transient_sample_pages     = 8                     # innodb_stats_s
 GRANT priv_type ON dbname.tablename TO user_or_role [with grant option]
 ```
 
-| Privilege     | Context     |Comment     |
-| :------------- | :------------- | :------------- |
-|Alter	|Tables|	To alter the table|
-|Alter routine	| Functions,Procedures	|To alter or drop stored functions/procedures|
-|Create	|Databases,Tables,Indexes	|To create new databases and tables|
-|Create routine	|Databases|	To use CREATE FUNCTION/PROCEDURE|
-|Create temporary tables|	Databases	|To use CREATE TEMPORARY TABLE|
-|Create view	|Tables	|To create new views|
-|Create user|	Server Admin	|To create new users|
-|Delete	|Tables	|To delete existing rows|
-|Drop|	Databases,Tables	|To drop databases, tables, and views|
-|Event	|Server Admin	|To create, alter, drop and execute events|
-|Execute	|Functions,Procedures|	To execute stored routines|
-|File	|File access on server	|To read and write files on the server, **SELECT INTO FILE / LOAD DATA IN**|
-|Grant option	|Databases,Tables,Functions,Procedures	|To give to other users those privileges you possess|
-|Index	|Tables	|To create or drop indexes|
-|Insert	|Tables	|To insert data into tables|
-|Lock tables	|Databases	|To use LOCK TABLES (together with SELECT privilege)|
-|Process	|Server Admin	|To view the plain text of currently executing queries|
-|Proxy	|Server Admin	|To make proxy user possible|
-|References|	Databases,Tables|	To have references on tables|
-|Reload	|Server Admin	|To reload or refresh tables, logs and privileges|
-|Replication client|	Server Admin|	To ask where the slave or master servers are|
-|Replication slave	|Server Admin|	To read binary log events from the master|
-|Select	|Tables	|To retrieve rows from table|
-|Show databases|	Server Admin|	To see all databases with SHOW DATABASES|
-|Show view	|Tables	|To see views with SHOW CREATE VIEW|
-|Shutdown	|Server Admin|	To shut down the server|
-|Super	|Server Admin|	To use KILL thread, SET GLOBAL, CHANGE MASTER, etc.|
-|Trigger|	Tables	|To use triggers|
-|Create tablespace|	Server Admin	|To create/alter/drop tablespaces|
-|Update	|Tables	|To update existing rows|
-|Usage	|Server Admin	|No privileges - allow connect only|
+| Privilege     | Context     |Comment     | Backup Acc | Service Acc|
+| :------------- | :------------- | :------------- | :------------- | :------------- |
+|ALL  | | All Privilege exclude GRANT OPTION |||
+|Alter	|Tables|	To alter the table||OO-O|
+|Alter routine	| Functions,Procedures	|To alter or drop stored functions/procedures||OO-O|
+|Create	|Databases,Tables,Indexes	|To create new databases and tables||OO-O|
+|Create routine	|Databases|	To use CREATE FUNCTION/PROCEDURE||OO-O|
+|Create temporary tables|	Databases	|To use CREATE TEMPORARY TABLE||OO|
+|Create view	|Tables	|To create new views||OO-O|
+|Create user|	Server Admin	|To create new users|||
+|Delete	|Tables	|To delete existing rows||OO|
+|Drop|	Databases,Tables	|To drop databases, tables, and views||OO-O|
+|Event	|Server Admin	|To create, alter, drop and execute events|||
+|Execute	|Functions,Procedures|	To execute stored routines||OO|
+|File	|File access on server	|To read and write files on the server, **SELECT INTO FILE / LOAD DATA IN**||O|
+|Grant option	|Databases,Tables,Functions,Procedures	|To give to other users those privileges you possess|||
+|Index	|Tables	|To create or drop indexes||OO-O|
+|Insert	|Tables	|To insert data into tables||OO|
+|Lock tables	|Databases	|To use LOCK TABLES (together with SELECT privilege)| O |OO|
+|Process	|Server Admin	|To view the plain text of currently executing queries, **SHOW PROCESSLIST**||O|
+|Proxy	|Server Admin	|To make proxy user possible|||
+|References|	Databases,Tables|	To have references on tables|||
+|Reload	|Server Admin	|To **reload or refresh** tables, logs and privileges|O|O|
+|Replication client|	Server Admin|	To ask where the slave or master servers are, **SHOW MASTER[SLAVE] STATUS**|O|O|
+|Replication slave	|Server Admin|	**To read binary log events from the master**||O|
+|Select	|Tables	|To retrieve rows from table|O|OO|
+|Show databases|	Server Admin|	To see all databases with SHOW DATABASES|O||
+|Show view	|Tables	|To see views with SHOW CREATE VIEW|O|OO-O|
+|Shutdown	|Server Admin|	To shut down the server|||
+|Super	|Server Admin|	To use KILL thread, SET GLOBAL, CHANGE MASTER, etc.|||
+|Trigger|	Tables	|To use triggers|||
+|Create tablespace|	Server Admin	|To create/alter/drop tablespaces|||
+|Update	|Tables	|To update existing rows||OO|
+|Usage	|Server Admin	|No privileges - allow connect only|||
 
 ## SHOW / SET Command
 > 작성 완료 (2019-08-09)
@@ -403,4 +404,3 @@ mysql> sourche script.sql
 Process Kill
 kill PROCESS_ID
 ```
-test  
