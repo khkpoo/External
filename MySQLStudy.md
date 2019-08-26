@@ -6,8 +6,9 @@
 **INDEX**
 - ~~Architecture~~
 - ~~Replication~~
-  - Replication Manage
-  - Replication Parameter
+  - Binary/Relay-log Manage
+  - Replication Command
+  - Thread Manage  
 - ~~Parameters~~
 - ~~Administrator~~
   ~~- Backup~~
@@ -28,7 +29,7 @@
 
 ## Replication
 > Write More.
-### Replication Manage
+### Binary/Relay-log Manage
 1. **Binary Log Manage**
 
     - Binary Log List 확인    
@@ -58,18 +59,27 @@
     - Relay Log Event 상세 확인  
 ``show relaylog events [in 'LAPTOP-4LJT842D-bin.000005']``
 
-### Replication Parameter
+### Replication Command
+CHANGE MASTER TO MASTER_LOG_FILE='binary_log.xxxxx',
+MASTER_LOG_POS=XXXX,
+MASTER_HOST='MASTER_IP',
+MASTER_PORT=3306,
+MASTER_USER='REPLI_USER',
+MASTER_PASSWORD='REPLI_PASS'
+
+### Thread Manage
+ START SLAVE
 
 ## Parameters
 > 정리안된 Parameter들 다수.
 
 - **Base Settings**
 ```
-user                        = mysql
+user                        = mysql                   # MySQL 구동 할 OS 계쩡 정보
 port                        = 3306
 basedir                     = /mysql/mysql-5.7.15
-datadir                     = /orad/mysql_data
-tmpdir                      = /orad/inno/tmp
+datadir                     = /orad/mysql_data        # Innodb 외의 데이터 파일 경로
+tmpdir                      = /orad/inno/tmp          # MySQL 내부적으로 사용하는 Temp 영역 (Temp Table 아니다)
 socket                      = /tmp/mysql.sock
 pid-file                    = /tmp/mysqld.pid
 default-storage-engine      = InnoDB                  # 기본적으로 사용할 스토리지 엔진
@@ -124,7 +134,8 @@ wait_timeout                = 28800                   # 지정된 시간 동안 
 sort_buffer_size            = 128K                    # 적정 수준 64KB~512KB. 2MB이상은 느려지는 현상 발생.
 join_buffer_size            = 128K                    # 적절한 조인 조건이 없어 Driven 테이블이 Full Table Scan될 때 사용. 128~512KB 사이 권장
 read_buffer_size            = 128K                    # 정확하진 않으나, Full Table Scan시 사용. 16kb~32MB에서 128kb일 때 가장 빠른 성능
-read_rnd_buffer_size        = 128K                    # 읽어야 할 데이터 레코드를 버퍼링하는데 필요한 것. 정렬대상 적을시 Single-pass, 크면 Two-pass
+read_rnd_buffer_size        = 128K                    # 읽어야 할 데이터 레코드를 버퍼링하는데 필요. 
+                                                      # Two-Pass 정렬시 사용되는 영역. ( 정렬대상 적을시 Single-pass, 크면 Two-pass )
                                                       # 64~128kb 적정. 웹환경이 아닌 dw일 경우 늘려야 함
 # Query Cache... Depricated in 8
 # 쿼리 캐쉬와 관련되었으며 128MB를 넘기지 않는다.메모리가 충분치 않거나, 테이블 데이터가 빈번하게 변경되면 64MB 이상으로는 설정하지 않음.
@@ -179,6 +190,11 @@ innodb_log_file_size          = 1024M
 innodb_log_files_in_group     = 2
 innodb_redo_log_archive_dirs                              # New Feature in Mysql 8 ~
 ```
+- **Innodb : Etc**
+```
+innodb_fast_shutdown        = 1                         # Clean Shutdown. 종료시 변경사항 Datafile에 기록. 
+                                                        # 재시작 시 Redo가 필요없고 시작이 빠르나, 종료시 느림
+```
 
 - **MyISAM**
 ```
@@ -219,7 +235,7 @@ log-bin-index                   = /usr/local/mysql/logs/binary_index
 max_binlog_size                 = 512M
 binlog_expire_logs_seconds      = 259200
 # binlog_cache_size             = 128K                            # 버퍼에 기록했다 디스크로 기록. 버퍼용 메모리 크기. 소용량 56~256kb
-binlog_cache_size               = 2M
+binlog_cache_size               = 2M                              # Sessin별 사용량이므로 크지않게, 56 ~ 256 KB
 binlog_format                   = MIXED
 log_bin_trust_function_creators = 0
 log-bin-trust-function-creators = 1                               # 바이너리 로그가 활성화된 상태에서 스터어드 함수가 생성되면 " 바이너리 로그로 인한 복제가 안전하지 않다"란 에러 발생.
@@ -236,7 +252,7 @@ sync_binlog                     = 1                               # 로그의 �
 - **Replication : Slave Node**
 ```
 relay-log                   = /orad/mysql_dalta/binlog/binary_log
-relay_log_purge             = TRUE
+relay_log_purge             = TRUE                                  # 이미 적용하여 불필요한 relay log 자동 purge (1,0)
 read_only                                                           # 슬레이브일 경우 읽기전용으로 만드는 옵션
 ```
 
@@ -263,7 +279,7 @@ innodb_stats_transient_sample_pages     = 8                     # innodb_stats_s
 ### Privileges
 > 작성 완료 (2019-08-09)
 
-- ROLE 생성하여 부여할 수 있음
+- ROLE 생성하여 부여할 수 있음 (5. 버전 지원안됨)
 - SHOW GRANTS FOR _USER_NAME_ USING _ROLE_NAME_
 - 모든 권한 부여는 `ALL PRIVILEGES` 사용
 ```
@@ -283,7 +299,7 @@ GRANT priv_type ON dbname.tablename TO user_or_role [with grant option]
 |Drop|	Databases,Tables	|To drop databases, tables, and views|
 |Event	|Server Admin	|To create, alter, drop and execute events|
 |Execute	|Functions,Procedures|	To execute stored routines|
-|File	|File access on server	|To read and write files on the server|
+|File	|File access on server	|To read and write files on the server, **SELECT INTO FILE / LOAD DATA IN**|
 |Grant option	|Databases,Tables,Functions,Procedures	|To give to other users those privileges you possess|
 |Index	|Tables	|To create or drop indexes|
 |Insert	|Tables	|To insert data into tables|

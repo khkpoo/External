@@ -1,11 +1,8 @@
-#import sys
-#import io
-#sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding = 'utf-8')
-#sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding = 'utf-8')
+# 문자열 함수
 
 str1="Hello Python!"
 
-# 문자열 포메팅
+## 문자열 포메팅
 print("{0}과 {1}".format('left','right'))	# 인자 사용하기
 print("{0:>100}".format("right"))			# 오른쪽 정렬
 print("{0:<100}".format("left"))			# 왼쪽 정렬
@@ -17,9 +14,10 @@ print(f'{str1}')							# 3.6~ 가능 변수참조용
 
 print("{0}".format('*') * 100 )
 
+## 슬라이싱
+print(str1[0:4])		# Substring.. 마지막 인덱스 번호값은 포함안됨 주의
 
-# 문자열 함수
-## 패턴
+## 패턴 검색
 print(str1.count('o'))  # 패턴 개수 리턴
 print(str1.find('o'))   # 패턴 위치 리턴(최초), 없을경우 -1
 print(str1.index('o'))  # 패턴 위치 리턴(최초), 없을경우 에러
