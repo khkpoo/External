@@ -67,7 +67,7 @@ MASTER_PASSWORD='REPLI_PASS'
 
 ### Thread Manage
  START SLAVE
-
+https://dev.mysql.com/doc/refman/8.0/en/replication-master-sql.html
 ## Parameters
 > 정리안된 Parameter들 다수.
 
@@ -114,7 +114,7 @@ character_set_client        = utf8                    # 8 deprecated ?
 default_character_set       = utf8
 ```
 
-- **onnection**
+- **Connection**
 ```
 back_log                    = 100                     # 클라이언트가 MySQL 접속시 인증을 대기 대기 큐에 담아 둘지 결정.
 max_connections             = 300
@@ -190,6 +190,16 @@ innodb_log_file_size          = 1024M
 innodb_log_files_in_group     = 2
 innodb_redo_log_archive_dirs                              # New Feature in Mysql 8 ~
 ```
+
+- **Innodb : Redo Log**
+```
+innodb_log_group_home_dir     = /orad/inno/log            # Redo Log 위치
+innodb_log_file_size          = 1024M
+innodb_log_files_in_group     = 2
+
+innodb_redo_log_archive_dirs                              # New Feature in Mysql 8 ~
+```
+
 - **Innodb : Etc**
 ```
 innodb_fast_shutdown          = 1                         # Clean Shutdown. 종료시 변경사항 Datafile에 기록. 
@@ -213,7 +223,7 @@ ft_min_word_len               = 2
 - **Log File**
 ```
 ## General 로그를 사용하려면 아래 설정은 그대로 유지하고
-## MySQL 서버에 로그인한 후 "SET GLOBALgeneral_log=1" 명령으로 활성화
+## MySQL 서버에 로그인한 후 "SET GLOBAL general_log=1" 명령으로 활성화
 general_log                 = 0
 general_log_file            = /usr/local/mysql/logs/general_query.log
 log-error                   = /mysql/mysql-5.7.15/alert/mysqld.log
