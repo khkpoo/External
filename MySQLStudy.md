@@ -455,6 +455,8 @@ To kill threads belonging to other users, the connected user must have the CONNE
 |Questions | The number of questions (queries) from clients since the server was started.|
 | Slow queries |The number of queries that have taken more than long_query_time seconds. See Section 5.4.5, “The Slow Query Log”. |
 | Opens | The number of tables the server has opened.|
+
+
 |Flush tables | The number of flush-*, refresh, and reload commands the server has executed.| 
 | Open tables | The number of tables that currently are open. |
 
