@@ -417,48 +417,148 @@ kill PROCESS_ID
 
 ## Utility
 ### mysql
+### mysqldump
+- Perform Logical Backups
+- Support *CSV, text, XML* format
+- Require *SELECT, SHOW VIEW, TRIGGER, LOCK TABLES* privilege
+
+```
+mysqldump [options] db_name [tbl_name ...]
+mysqldump [options] --databases db_name ...
+mysqldump [options] --all-databases
+```
+
+**Option**
+
+| Category | Option Name | Desc. |
+| :-------------| :------------- | :------------- | 
+| General | --compress -C | Compress all information sent between client and server   |
+| General | --host=*hostname* -h *hostname* | Dump data from the MySQL server on the given host. The default host is localhost.   |
+| General | --login-path=*name* |  Read login path options from .mylogin.cnf     |
+| General | --password=*password*  | The password of the MySQL account used for connecting to the server.     |
+| General | --protocol=*{TCP\|SOCKET\|PIPE\|MEMORY}*| Connection protocol to use      |
+| General | --port=*portnum* |  TCP/IP port number for connection  |
+| General | --socket=*path* -S | Unix socket file or Windows named pipe to use    |
+| DDL | --add-drop-database | Write a DROP DATABASE statement before each CREATE DATABASE statement. This option is typically used in conjunction with the --all-databases or --databases option **because no CREATE DATABASE statements are written unless one of those options is specified.** |
+| DDL |--no-create-db, -n | Suppress the CREATE DATABASE statements that are otherwise included in the output **if the --databases or --all-databases option is given.**|
+| DDL | --no-create-info, -t | Do not write CREATE TABLE statements that create each dumped table.|
+| DDL | --add-drop-table | Write a DROP TABLE statement before each CREATE TABLE statement. |
+| DDL | --add-drop-trigger | Write a DROP TRIGGER statement before each CREATE TRIGGER statement.|
+| DDL | --replace | Write REPLACE statements rather than INSERT statements.|
+| DDL | --all-tablespaces, -Y | Adds to a table dump all SQL statements needed to create any tablespaces used by an NDB table. This information is not otherwise included in the output from mysqldump. **This option is currently relevant only to NDB Cluster tables.**|
+| DDL | --no-tablespaces, -y | This option suppresses all CREATE LOGFILE GROUP and CREATE TABLESPACE statements in the output of mysqldump. |
+| Debug | --dump-date |  --dump-date and --skip-dump-date control whether the date is added to the comment.|
+| Debug | --force, -f | Ignore all errors; continue even if an SQL error occurs during a table dump. |
+| Debug | --log-error=*file_name* | Log warnings and errors by appending them to the named file. The default is to do no logging. |
+| Debug | --verbose, -v | Verbose mode. Print more information about what the program does. |
+| Help | --help, -?| Display a help message and exit.|
+| Help | --version, -V | Display version information and exit.|
+| Character | --default-character-set=*charset_name* | Use charset_name as the default character set. See Section 10.15, “Character Set Configuration”. If no character set is specified, mysqldump uses utf8. |
+| Character | --set-charset | Write SET NAMES default_character_set to the output. This option is enabled by default. To suppress the SET NAMES statement, use --skip-set-charset. |
+| Character | --character-sets-dir=*dir_name* | The directory where character sets are installed.  |
+| Replication | --master-data=*value* | **[Dump in Master]** Use this option to dump a master replication server to produce a dump file that can be used to set up another server as a slave of the master. It causes the dump output to include a CHANGE MASTER TO statement that indicates the binary log coordinates (file name and position) of the dumped server. These are the master server coordinates from which the slave should start replicating after you load the dump file into the slave. |
+| Replication | --delete-master-logs | **[Dump in Master]**  On a master replication server, delete the binary logs by sending a PURGE BINARY LOGS statement to the server after performing the dump operation. This option automatically enables --master-data.|
+| Replication | --dump-slave=*value* | **[Dump in Slave]** This option is similar to --master-data except that it is used to dump a replication slave server to produce a dump file that can be used to set up another server as a slave that has the same master as the dumped server. **It causes the dump output to include a CHANGE MASTER TO statement** that indicates the binary log coordinates (file name and position) of the dumped slave's master. |
+| Replication | --include-master-host-port | **[Dump in Slave]** For the CHANGE MASTER TO statement in a slave dump produced with the --dump-slave option, **add MASTER_HOST and MASTER_PORT options** for the host name and TCP/IP port number of the slave's master. |
+| Replication | --apply-slave-statements | **[Dump in Slave]** For a slave dump produced with the --dump-slave option, **add a STOP SLAVE** statement before the CHANGE MASTER TO statement and a START SLAVE statement at the end of the output.|
+| Format | --tab=dir_name, -T dir_name | Produce tab-separated text-format data files. For each dumped table, mysqldump creates a tbl_name.sql file that contains the CREATE TABLE statement that creates the table, and the server writes a tbl_name.txt file that contains its data. |
+| Format | --fields-terminated-by= | These options are used with the --tab option and have the same meaning as the corresponding FIELDS clauses for LOAD DATA. |
+| Format | --lines-terminated-by= | This option is used with the --tab option and has the same meaning as the corresponding LINES clause for LOAD DATA. |
+| Format | --tz-utc | This option enables TIMESTAMP columns to be dumped and reloaded between servers in different time zones.  | 
+| Format | --xml, -X | Write dump output as well-formed XML. |
+| Filtering | --all-databases, -A | Dump all tables in all databases. This is the same as using the --databases option and naming all the databases on the command line. **8.0부터 --routines 과 --events 는 명시해야 Dump 가능** |
+| Filtering | --databases, -B | Dump several databases.  **This option may be used to dump the performance_schema database, which normally is not dumped even with the --all-databases option.** |
+| Filtering | --ignore-table=db_name.tbl_name | Do not dump the given table |
+| Filtering | --no-data, -d | Do not write any table row information (that is, do not dump table contents). | 
+| Filtering | --where='where_condition', -w 'where_condition' | Dump only rows selected by the given WHERE condition. |
+| Performance | --column-statistics| Add ANALYZE TABLE statements to the output to generate histogram statistics for dumped tables when the dump file is reloaded. |
+| Performance | --disable-keys, -K | This makes loading the dump file faster because the indexes are created after all rows are inserted. This option is effective only for nonunique indexes of MyISAM tables. |
+| Performance | --extended-insert, -e | Write INSERT statements using multiple-row syntax that includes several VALUES lists. This results in a smaller dump file and speeds up inserts when the file is reloaded. |
+| Performance | --quick, -q | This option is useful for dumping large tables. It forces mysqldump to retrieve rows for a table from the server a row at a time rather than retrieving the entire row set and buffering it in memory before writing it out. |
+| Transactional  | --single-transaction | This option sets the transaction isolation mode to REPEATABLE READ and sends a START TRANSACTION SQL statement to the server before dumping data. It is useful only with transactional tables such as InnoDB. **no other connection should use the following statements: ALTER TABLE, CREATE TABLE, DROP TABLE, RENAME TABLE, TRUNCATE TABLE.**  |
+| Transactional  | --lock-tables, -l | For each dumped database, lock all tables to be dumped before dumping them. **Because --lock-tables locks tables for each database separately, this option does not guarantee that the tables in the dump file are logically consistent between databases.** |
+| Transactional | --order-by-primary | Dump each table's rows sorted by its primary key, or by its first unique index, if such an index exists. **This is useful when dumping a MyISAM table to be loaded into an InnoDB table**, but makes the dump operation take considerably longer. |
+| Transactional | --add-locks | Surround each table dump with LOCK TABLES and UNLOCK TABLES statements. **This results in faster inserts when the dump file is reloaded.**  |
+| Transactional | --no-autocommit | Enclose the INSERT statements for each dumped table within SET autocommit = 0 and COMMIT statements. |
+| Option Group | --compact |  This option enables the *--skip-add-drop-table, --skip-add-locks, --skip-comments, --skip-disable-keys, and --skip-set-charset* options.  |
+| Option Group | --opt | shorthand for the combination of *--add-drop-table --add-locks --create-options --disable-keys --extended-insert --lock-tables --quick --set-charset*  |
+
+
+
 ### mysqladmin
 - Client for performing administrative operations
 - Check server's configuration / status
 - Create & Drop database and more
 
-```mysqladmin [options] command [command-arg] [command [command-arg]] ...```
+```
+mysqladmin [options] command [command-arg] [command [command-arg]] ...
+```
 
-*Command*
+**Command**
+
 | Command Name [Arg] | Desc. |
 | :------------- | :------------- | 
-| create db_name | Create a new database named db_name.|
+| create [db_name] | Create a new database named db_name.|
 | debug | Tell the server to write debug information to the error log. The connected user must have the SUPER privilege. Format and content of this information is subject to change.|
-| drop db_name | Delete the database named db_name and all its tables.| 
+| drop [db_name] | Delete the database named db_name and all its tables.| 
 | extended-status | Display the server status variables and their values.|
-| flush-hosts | Flush all information in the host cache. See Section 8.12.4.2, “DNS Lookup Optimization and the Host Cache”.|
+| flush-hosts | Flush all information in the host cache. |
 | flush-logs [log_type ...] | Flush all logs.|
 | flush-privileges | Reload the grant tables (same as reload). | 
-| flush-status | |Clear status variables. | 
+| flush-status | Clear status variables. | 
 | flush-tables | Flush all tables.| 
 |flush-threads| Flush the thread cache.| 
-| kill id,id,... | |Kill server threads. If multiple thread ID values are given, there must be no spaces in the list.
-To kill threads belonging to other users, the connected user must have the CONNECTION_ADMIN or SUPER privilege.|
-| password new_password| Set a new password. This changes the password to new_password for the account that you use with mysqladmin for connecting to the server. Thus, the next time you invoke mysqladmin (or any other client program) using the same account, you will need to specify the new password.|
+| kill [id,id,...] | Kill server threads. If multiple thread ID values are given, there must be no spaces in the list. To kill threads belonging to other users, the connected user must have the CONNECTION_ADMIN or SUPER privilege.|
+| password [new_password] | Set a new password. This changes the password to new_password for the account that you use with mysqladmin for connecting to the server. Thus, the next time you invoke mysqladmin (or any other client program) using the same account, you will need to specify the new password.|
 | ping | Check whether the server is available. The return status from mysqladmin is 0 if the server is running, 1 if it is not. This is 0 even in case of an error such as Access denied, because this means that the server is running but refused the connection, which is different from the server not running.| 
-| processlist | Show a list of active server threads. This is like the output of the SHOW PROCESSLIST statement. If the --verbose option is given, the output is like that of SHOW FULL PROCESSLIST. (See Section 13.7.6.29, “SHOW PROCESSLIST Syntax”.)|
-|reload | Reload the grant tables. |
+| processlist | Show a list of active server threads. This is like the output of the SHOW PROCESSLIST statement. If the --verbose option is given, the output is like that of SHOW FULL PROCESSLIST.|
+| reload | Reload the grant tables. |
 | refresh  | Flush all tables and close and open log files.|
 | shutdown | Stop the server.| 
 | start-slave | Start replication on a slave server.| 
 | status | Display a short server status message. | 
 | stop-slave | Stop replication on a slave server. | 
 | variables | Display the server system variables and their values.|
-|version | Display version information from the server.|
+| version | Display version information from the server.|
 | Uptime | The number of seconds the MySQL server has been running. | 
 | Threads | The number of active threads (clients). | 
-|Questions | The number of questions (queries) from clients since the server was started.|
-| Slow queries |The number of queries that have taken more than long_query_time seconds. See Section 5.4.5, “The Slow Query Log”. |
+| Questions | The number of questions (queries) from clients since the server was started.|
+| Slow queries |The number of queries that have taken more than long_query_time seconds.|
 | Opens | The number of tables the server has opened.|
-
-
-|Flush tables | The number of flush-*, refresh, and reload commands the server has executed.| 
+| Flush tables | The number of flush-*, refresh, and reload commands the server has executed.| 
 | Open tables | The number of tables that currently are open. |
+
+**Option**
+
+| Option Name | Desc. |
+| :------------- | :------------- | 
+| --compress -C | Compress all information sent between client and server   |
+| --sleep=*delay* -i *delay* | Execute commands repeatedly, sleeping for delay seconds in between      |
+| --count=*N* -c *N* | Number of iterations to make for repeated command execution     |
+| --default-character-set=*charset_name* | Specify default character set     |
+| --defaults-extra-file=*file_name* | Read named option file in addition to usual option files      |
+| --defaults-file=*file_name* | Read only named option file     |
+| --force -f |  Continue even if an SQL error occurs      |
+| --get-server-public-key | Request RSA public key from server |
+| --server-public-key-path=*filename* |  Path name to file containing RSA public key |
+| --help |  Display help message and exit     |
+| --verbose -v | Verbose mode      |
+| --version -V| Display version information and exit     |
+| --host=*hostname* -h *hostname* | Host on which MySQL server is located     |
+| --port=*portnum* |  TCP/IP port number for connection  |
+| --socket=*path* -S | Unix socket file or Windows named pipe to use    |
+| --user=*username* -u *username*  | MySQL user name to use when connecting to server      |
+| --password=*password*  | Password to use when connecting to server     |
+| --login-path=*name* |  Read login path options from .mylogin.cnf     |
+| --no-defaults | Read no option files      |
+| --protocol=*{TCP\|SOCKET\|PIPE\|MEMORY}*| Connection protocol to use      |
+| --show-warnings |  Show warnings after statement execution     |
+| --shutdown_timeout |  The maximum number of seconds to wait for server shutdown     |
+| --silent  | Silent mode     |
+| --connect_timeout | Number of seconds before connection timeout     |
+| --wait=*count* -w *count*  | If the connection cannot be established, wait and retry instead of aborting     |
+| --vertical |   Print query output rows vertically (one line per column value)      |
+
 
 
 
