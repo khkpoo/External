@@ -426,7 +426,7 @@ kill PROCESS_ID
 
 *Command*
 | Command Name [Arg] | Desc. |
-| :-----------------| :-----------------|
+| :------------- | :------------- | 
 | create db_name | Create a new database named db_name.|
 | debug | Tell the server to write debug information to the error log. The connected user must have the SUPER privilege. Format and content of this information is subject to change.|
 | drop db_name | Delete the database named db_name and all its tables.| 
@@ -457,5 +457,6 @@ To kill threads belonging to other users, the connected user must have the CONNE
 | Opens | The number of tables the server has opened.|
 |Flush tables | The number of flush-*, refresh, and reload commands the server has executed.| 
 | Open tables | The number of tables that currently are open. |
+
 
 
