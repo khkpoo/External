@@ -414,3 +414,48 @@ mysql> sourche script.sql
 Process Kill
 kill PROCESS_ID
 ```
+
+## Utility
+### mysql
+### mysqladmin
+- Client for performing administrative operations
+- Check server's configuration / status
+- Create & Drop database and more
+
+```mysqladmin [options] command [command-arg] [command [command-arg]] ...```
+
+*Command*
+| Command Name [Arg] | Desc. |
+| :-----------------| :-----------------|
+| create db_name | Create a new database named db_name.|
+| debug | Tell the server to write debug information to the error log. The connected user must have the SUPER privilege. Format and content of this information is subject to change.|
+| drop db_name | Delete the database named db_name and all its tables.| 
+| extended-status | Display the server status variables and their values.|
+| flush-hosts | Flush all information in the host cache. See Section 8.12.4.2, “DNS Lookup Optimization and the Host Cache”.|
+| flush-logs [log_type ...] | Flush all logs.|
+| flush-privileges | Reload the grant tables (same as reload). | 
+| flush-status | |Clear status variables. | 
+| flush-tables | Flush all tables.| 
+|flush-threads| Flush the thread cache.| 
+| kill id,id,... | |Kill server threads. If multiple thread ID values are given, there must be no spaces in the list.
+To kill threads belonging to other users, the connected user must have the CONNECTION_ADMIN or SUPER privilege.|
+| password new_password| Set a new password. This changes the password to new_password for the account that you use with mysqladmin for connecting to the server. Thus, the next time you invoke mysqladmin (or any other client program) using the same account, you will need to specify the new password.|
+| ping | Check whether the server is available. The return status from mysqladmin is 0 if the server is running, 1 if it is not. This is 0 even in case of an error such as Access denied, because this means that the server is running but refused the connection, which is different from the server not running.| 
+| processlist | Show a list of active server threads. This is like the output of the SHOW PROCESSLIST statement. If the --verbose option is given, the output is like that of SHOW FULL PROCESSLIST. (See Section 13.7.6.29, “SHOW PROCESSLIST Syntax”.)|
+|reload | Reload the grant tables. |
+| refresh  | Flush all tables and close and open log files.|
+| shutdown | Stop the server.| 
+| start-slave | Start replication on a slave server.| 
+| status | Display a short server status message. | 
+| stop-slave | Stop replication on a slave server. | 
+| variables | Display the server system variables and their values.|
+|version | Display version information from the server.|
+| Uptime | The number of seconds the MySQL server has been running. | 
+| Threads | The number of active threads (clients). | 
+|Questions | The number of questions (queries) from clients since the server was started.|
+| Slow queries |The number of queries that have taken more than long_query_time seconds. See Section 5.4.5, “The Slow Query Log”. |
+| Opens | The number of tables the server has opened.|
+|Flush tables | The number of flush-*, refresh, and reload commands the server has executed.| 
+| Open tables | The number of tables that currently are open. |
+
+

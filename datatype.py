@@ -52,5 +52,13 @@ print('{0:=^100}'.format("end"))
 ### { }
 ### Key : Value
 ### Key 는 유니크해야하며 Lis자료형을 쓸수없다
-people = {1:'base'}
-print(people[1])
+person = {'name' : 'A', 'number' : 1}
+people = []
+print('{0:=^100}'.format("end"))
+for i in range(0, 10):	
+	print(i)
+	person['number'] = i
+	print(people)
+	people.append(person)
+
+print(people)	
