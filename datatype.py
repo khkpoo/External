@@ -54,11 +54,50 @@ print('{0:=^100}'.format("end"))
 ### Key 는 유니크해야하며 Lis자료형을 쓸수없다
 person = {'name' : 'A', 'number' : 1}
 people = []
-print('{0:=^100}'.format("end"))
-for i in range(0, 10):	
+print('{0:=^100}'.format(" start "))
+print(person.keys())		# Key 값 알아오기 리턴타입은 dict_keys
+for i in person.keys():
 	print(i)
-	person['number'] = i
-	print(people)
-	people.append(person)
+print(list(person.keys()))	# Key 값 list형태로 벼환
+print(person.values())		# Value 값 알아오기 리턴타입은 dict_values
+for i in person.values():
+	print(i)
+print(person.items())		# Item(Key Value 쌍 리턴. dict_items
+for i in person.items():
+	print(i)
+print(person['name'])		# 값 가져오기
+print(person.get('name'))
+print(person.get('name3','Default Value'))	# 값없을 경우 NVL처리
+print('name' in person)		# Key 존재여부
+print('name3' in person)
+person.clear()				# Dictionary Clear
 
-print(people)	
+## Set 집합연산자
+### 중복허용하지 않음
+### 순서 없음
+s1=set("HELLo")
+s2=set(['w','o','r','l','d'])
+print(s1)
+print(s2)
+print(s1 & s2)				# 교집합 
+print(s1.intersection(s2))
+print(s1 | s2)				# 합집합
+print(s1.union(s2))
+print(s1-s2)				# 차집합
+print(s1.difference(s2))
+s1.add('r')					# 요소 추가
+print(s1)
+s1.update('ABCDH')			# 요소들 추가
+print(s1)
+s1.remove('A')				# 요소 제거
+print(s1)
+print('{0:=^100}'.format(" END "))
+
+## Bool
+### True / False
+list = [1,2,3,4]
+while list:
+	print(list.pop())
+	
+print(bool("Exists"))
+print(bool(""))

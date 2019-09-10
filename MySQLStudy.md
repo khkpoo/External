@@ -58,18 +58,18 @@
 ``show relaylog events [in 'LAPTOP-4LJT842D-bin.000005']``
 
 ### Replication Command
-CHANGE MASTER TO MASTER_LOG_FILE='binary_log.xxxxx',
-MASTER_LOG_POS=XXXX,
-MASTER_HOST='MASTER_IP',
-MASTER_PORT=3306,
-MASTER_USER='REPLI_USER',
-MASTER_PASSWORD='REPLI_PASS'
+CHANGE MASTER TO MASTER_LOG_FILE='binary_log.xxxxx',  
+MASTER_LOG_POS=XXXX,  
+MASTER_HOST='MASTER_IP',  
+MASTER_PORT=3306,  
+MASTER_USER='REPLI_USER',  
+MASTER_PASSWORD='REPLI_PASS'  
 
 ### Thread Manage
- START SLAVE
+ START SLAVE  
 https://dev.mysql.com/doc/refman/8.0/en/replication-master-sql.html
 ## Parameters
-> 정리안된 Parameter들 다수.
+> Parameter 1차 정리 완료
 
 - **Base Settings**
 ```
