@@ -1,3 +1,4 @@
+2019-09-16
 # MySQL
 >  Ref Link : [W3Resource](https://w3resource.com/mysql/mysql-show.php)
 
@@ -12,11 +13,11 @@
   ~~- Backup~~
   - Privileges
 - SHOW / SET Command
-- ~~Command Line Interface~ ~
+- ~~Command Line Interface~~
 - ~~Variables~~
 - ~~Function~~
 - ~~Data Type~~
-- ~~Tuning : Explain~~d
+- Tuning : Explain
 - ~~Tuning : Hint~~
 
 
@@ -36,7 +37,7 @@
       | Log_name | File_size     | Encrypted|
       | :------------- | :------------- | :------------- |
       |LAPTOP-1-bin.000001	|178 |	No |
-      |LAPTOP-1-bin.000002	|2092538 |	No |
+      |LAPTOP-1-bin.000002	|2092583 |	No |
 
 
     - Binary Log Purge (날짜기준)  
@@ -562,3 +563,137 @@ mysqladmin [options] command [command-arg] [command [command-arg]] ...
 
 
 
+## Tuning : Explain
+### **용어**
+- 단위 쿼리 : 명시적인 SELECT Block
+- SUBQUERY 종류
+  - NESTED QUERY : SELECT 절에 사용된 서브쿼리
+  - SUBQUERY : WHERE 절에 사용된 서브쿼리
+  - DERIVED : FROM 절에 사용된 서브쿼리. UNNAMED VIEW
+
+### **Column - id**
+- 위부터 아래로
+- 낮은 순서가 외부
+- 동일 id 인경우 같은 스텝
+- 기본적으로 단위 쿼리 개수만큼 id 값이 부여
+
+### **Column - select_type**
+단위 쿼리가 어떤 Type 인지 나타내는 Columns  
+
+| Name     | Desc.     |
+| :------------- | :------------- |
+| SIMLE | union , 서브쿼리가 없는 단순 SELECT. (조인포함) 제일 바깥쪽의 쿼리가 SIMPLE인경우가 많음 |
+| PRIMARY | union , 서브쿼리가 있는 SELECT에서 가장 바깥쪽 단위 쿼리에 PRIMARY 로 표시. 제일 바깥쪽의 쿼리가 PRIMARY인경우가 많음 |
+| UNION | 첫번째를 제외한 두번째 이후의 UNION 쿼리 부분.  |
+| DEPENDENT UNION | UNION 내부 쿼리가 외부 조건에 영향을 받는경우. 의존적이기 때문에 외부 쿼리 수행 이후 수행 |
+| UNION RESULT | UNION 결과를 담아놓는 임시공간. ID값이 존재하지 않음. |
+| SUBQUERY | FROM 절 이외에서 사용딘 단위쿼리. (DERIVED의 경우 FROM절에 사용된 단위쿼리). 서브쿼리 캐싱가능 |
+| DEPENDENT SUBQUERY | FROM 절 이외에서 사용딘 단위쿼리. 외부 조건에 영향을 받음. 의존적이기 때문에 외부 쿼리 수행 이후 수행 |
+| DERIVED | 서브쿼리가 FROM절에 사용된 경우. 실행결과를 메모리에 저장하기 때문에 파생테이블이라고도 불림 (SIMPLE VIEW머징은 5.7부터 가능) |
+| UNCACHEABLE SUBQUERY | 캐시 불가능한 서브쿼리. 사용자변수, RAND(), NON-DETERMINISTRIC FUNCTION등이 사용된 경우 |
+| UNCACHEABLE UNION | UNION + UNCACHEABLE |
+
+> **Caution**  
+> DERIVED : 임시테이블이기 때문에 (메모리나 디스크) 데이터 크기가 크거나 많은 경우 주의  
+> UNCACHEABLE SUBQUERY : 변수 제거나 함수 대체로 캐시가능한지 검토 필요  
+> DEPENDENT SUBQUERY : 성능상 느린경우가 많다
+
+
+### **Column - table**  
+- 단위 쿼리가 아닌 테이블 기준으로 표시  
+- 별칭이 있는경우 별칭으로 표시  
+- 별도의 테이블을 사용하지 않는 경우 null 값으로 표현  
+- <>는 임시테이블을 의미  
+- <>안의 숫자는 id값을 가리킴 *(실행계획 해석시 순서를 주의)*  
+
+### **Column - type**
+테이블 Access Type  
+
+| Name     | Desc.     |
+| :------------- | :------------- |
+| system | 레코드가 0또는 1인 테이블 참조시 나타남. MyISAM, Memory Engine에서만 사용 |
+| const | 실제 수행 후 상수화. Index Unique Scan 유사. PK UK 이용, 단 인덱스 일부컬럼만 이용시 Ref |
+| eq_ref | 조인 시 후행 테이블(드리븐)의 조인 조건 인덱스가 PK,UK인 경우 (1건 보장시) |
+| ref | 조인의 순서와 PK, UK 여부 상관없음. 1건 보장이 안되는 경우 |
+| fulltext | 전문(fulltext)검색 인덱스 사용 | 
+| ref_or_null | ref 방식에 null 비교(is null) 까지 추가된 형태 |
+| unique_subquery | WHERE절에 사용된 IN 형태의 서브쿼리를 위한 접근방식. 중복되지 않은 유니크한 값만 반환하는것이 보장될때 중복제거작업을 스킵 |
+| index_subquery|  WHERE절에 사용된 IN 형태의 서브쿼리를 위한 접근방식. 중복되는 값이 나올 수 있으나 인덱스를 이용해 중복제거작업이 가능할 경우 나타남|
+| range | Index Range Scan 유사 |
+| index_merge | 2개 이상의 인덱스를 이용해 스캔 후 병합. **Oracle과 달리 Index Join 형태로 표시하지 않음** |
+| index | Index Full Scan 유사 |
+| ALL | Full Table Scan 유사 |
+
+> **Caution**  
+> ALL / index : Full Scan 방식이므로 적절한 인덱스가 있는지 확인 필요
+
+### **Column - possible_keys**
+- 후보로 선정되었던 접근방식(type)에 사용된 인덱스의 목록
+- 실제 사용된것을 의미하진 않음
+
+### **Column - key**
+- 실제 사용된 인덱스명
+- PRIMARY 는 PK, 외에는 Secondary Index 
+- type 이 ALL 인경우 null
+- type 이 index_merge 인 경우 사용된 두개의 Index명이 나열
+
+> **Caution**  
+> 해당 값이 없을 경우 인덱스 스캔이 불가함을 의미
+
+### **Column - key_len**
+- 다중컬럼으로 구성된 인덱스 중 사용된 컬럼을 확인할 수 있다
+- 과거 (5.0) 버전에서는 Predicate를 확인가능 (Predicate 조건으로 쓰인 컬럼의 length만 표현함)
+- 반면 5.1에서는 Filter 조건으로 쓰인 컬럼의 length도 포함됨 (Storage Engine으로 인덱스에 포함된 모든조건을 넘김)
+
+### **Column - ref**
+- type 정보가 ref 일 경우 어떤값이 제공되었는지 확인 가능
+- 상수일 경우 const로 표시
+- 조인의 경우 조인컬럼으로 표시
+- 값이 변환되야할 경우 func 출력 (컬럼타입)
+
+### **Column - rows**
+- Optimizer에 의한 예측치
+- 결과 건수가 아닌 처리건수를 의미
+
+> **Caution**  
+> LIMIT가 있는 SQL의 경우 실행계획은 이를 반영하지 않으므로(크게나올 수 있다) 큰 문제가 되지 않는다.
+
+### **Column - extra**
+
+| Name     | Desc.     |
+| :------------- | :------------- |
+| Distinct | 데이터 확인용으로 Distinct쿼리에서 불필요한 조인은 하지 않는 동작방식 (Semi 조인처럼 동작) |
+| Range checked for each record | NL 조인 시 매 선행 로우마다 후행테이블에 접근할 인덱스 및 스캔방식을 결정하는 방식. Type값이 ALL이지만 FTS는 아니므로 신경쓰지 말 것 |
+| Select tables optimized away | index min/max scan 유사. |
+| Using index | 커버링 인덱스, InnoDB의 Secondary Index는 PK컬럼도 묵시적으로 저장된 효과를 낼 수 있다. Scan방식을 의미하지 않으므로 type에 다양한 스캔방식이올 수 있다.|
+| Using index for gruop-by | GROUP BY를 처리할 때, 적절한 인덱스가 존재한다면 Loose Scan (Skip Scan) 방식을 통해 정렬과정을 스킵하는 방식 |
+| Using join buffer | 조인키에 적절한 인덱스가 없을 경우 드라이빙테이블의 조인에 필요한 컬럼값을 메모리에 임시 저장해놓고 드리븐 테이블이 이를 루핑하면서 스캔할때 사용 **join_buffer_size** |
+| Using filesort | ORDER BY 절이 적절한 인덱스 사용못할 경우 Sort Buffer(메모리)에 복사한 후 정렬. 비효율인경우 대다수. **sort_buffer_size** |
+| Using temporary | 임시공간에 저장이 필요한 경우 (메모리 혹은 파일) |
+| Using where | MySQL Engine을 ( <> Storage Engine ) 통해 처리된 내역이 있을 경우 표시됨. Index 효율 알 수 있음 |
+| Using where with pushed condition | NDB 에서만 나타남. 조건절까지 Storage Engine에 전달하여 최종 결과만 받을 수 있음 |
+| Not exists | Outer join + is null 로 작성한 not exists 의미의 쿼리를 내부적으로 최적화하는 방식. 쿼리변환을 의미하진 않음.|
+
+- 기타 정보성. 논리적 오류 Info 
+  - Impossible HAVING 
+  - Impossible WHERE [xxx]
+  - no matching row in const table
+  - no matching min/max row
+  - No tables used
+
+> **Caution 1.**  
+> 일반적으로 나쁜 경우 : using filesort / using join buffer / using temporary / using where  
+> 일반적으로 좋은 경우 : dstinct / using index / using index for group-by
+
+> **Caution 2.**  
+> using join buffer : 드리븐 테이블의 조인컬럼에 적절한 인덱스가 없는 경우 나타나는 방식으로 내부 처리되는 순서는 다음과 같으며, 실제적인 조인순서는(드라이빙>드리븐) 일반적인 NL방식과 다를 수 있으므로 정렬결과가 다를 수 있다.  
+>> 1. 조건을 만족하는 드라이빙테이블을 읽음
+>> 2. 이렇게 읽은 조인컬럼을 포함한 컬럼들을 임시 메모리에 저장
+>> 3. 조건을 만족하는 드리븐테이블을 차례대로 읽음
+>> 4. 3에서 읽은 로우마다 2에서 생성한 조인버퍼의 내용을 병합(조인)하여 결과를 반환한다
+
+### **Column - filtered**
+- rows와 마찬가지로 예측치
+- 필터링되고 *남은* 레코드 비율(%)
+- 100 : 버려지지 않았음을 의미
+- 수치가 클수록(100) 인덱스 효율은 높음을 의미한다
