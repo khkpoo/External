@@ -561,6 +561,38 @@ mysqladmin [options] command [command-arg] [command [command-arg]] ...
 | --vertical |   Print query output rows vertically (one line per column value)      |
 
 
+### mysqlbinlog
+- To display log's contents in text format
+- Support *Binary Log / Relay Log* format
+
+
+```
+mysqlbinlog [options] log_file ...
+```
+
+**Option**
+
+| Option Name | Desc. |
+| :------------- | :------------- | 
+| --base64-output | Print binary log entries using base-64 encoding   |
+| --verbose | Reconstruct row events as SQL statements |
+| --start-datetime |  Read binary log from first event with timestamp equal to or later than datetime argument       |
+| --start-position  | Read binary log from first event with position equal to or greater than argument       |
+| --stop-datetime | Stop reading binary log at first event with timestamp equal to or greater than datetime argument |
+| --stop-position | Stop reading binary log at first event with position equal to or greater than argument |
+| --disable-log-bin | Disable binary logging |
+| --rewrite-db | Create rewrite rules for databases when playing back from logs written in row-based format. Can be used multiple times. |
+| --database |  List entries for just this database |
+| --server-id | Extract only those events created by the server having the given server ID |
+| --user |  MySQL user name to use when connecting to server |
+| --password | Password to use when connecting to server |
+| --host | Host on which MySQL server is located |
+| --port | TCP/IP port number for connection |
+| --protocol | Connection protocol to use |
+| --socket | Unix socket file or Windows named pipe to use |
+
+
+
 
 
 ## Tuning : Explain
